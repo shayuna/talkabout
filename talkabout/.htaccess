@@ -1,0 +1,17 @@
+
+ExpiresActive On
+
+# 1 day
+<FilesMatch "\.(html|htm)$">
+Header set Cache-Control "max-age=86400, private, proxy-revalidate"
+</FilesMatch>
+
+# 1 week
+<FilesMatch "\.(css)$">
+Header set Cache-Control "max-age=604800, private, proxy-revalidate"
+</FilesMatch>
+
+# 1 month
+<FilesMatch "\.(js|ico|png|jpg|gif)$">
+Header set Cache-Control "max-age=2592000, private, proxy-revalidate"
+</FilesMatch>

@@ -1,0 +1,581 @@
+<?php
+    session_start();
+
+    $sbjAreaHdrTxt="Click on a subject, start talking";
+    $sbjInputPlaceHolder="add up to 5 subjects";
+    $sbjInputTtl="add up to 5 subjects";
+
+    $sbjAddBtnTxt="add";
+    $contBtnTxt="go with the flow";
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>talkabout</title>
+<link rel="stylesheet" href="style_listbox.css" />
+
+</head>
+
+<body onload="onLoad()" onunload="moveOn()">
+<div id="tolkaboutBody">
+    <div id="manageSubjectsArea">
+        <div class="subjectsArea">
+            <div id="newSubjectsKnockingArea" onclick="updateSubjectsFromKnockingArea()">
+                <span></span>
+            </div>
+        </div>
+        <div id="subjectsListCaption">
+            <span><?=$sbjAreaHdrTxt?></span>
+        </div>
+        <div id="subjectsListContainer">
+        </div>
+        <div class="subjectsArea">
+            <div>
+                <input id="newSubjectInput" name="newSubjectInput" placeholder="<?=$sbjInputPlaceHolder?>"
+                    title="<?=$sbjInputTtl?>" onkeyDown="return isAddNewSubject(event)"/>
+                <script language="javascript">
+/*
+                    if (!("placeholder" in document.createElement("input")))
+                        document.getElementById("newSubjectInput").focus();
+*/
+                </script>
+                <input id="newSubjectAdd" type="button" value="<?=$sbjAddBtnTxt?>" onkeyDown="return isAddNewSubject(event)" onclick="addNewSubject()" />
+            </div>
+        </div>
+    </div>
+</div>
+<div id="usrMsg" class="msgToUser">
+    <div>
+        <div>
+            <span id="usrMsgTxt"></span>
+        </div>
+        <div class="usrMsgBtnLine">
+            <input id="usrMsgBtn" type="button" value="<?=$contBtnTxt?>" onclick="closeUsrMsg()"/>
+        </div>
+    </div>
+</div>
+<div id="curtain"></div>
+</body>
+<script type="text/javascript" src="jquery.js"></script>
+
+<script language="javascript" type="text/javascript">
+
+    var newSubjectNmAr= [];
+    var newSubjectIndxAr = [];
+    var newSubjectIndx="";
+    var subjectFromListIndx="";
+    var newSubjectIsTypingStatus=0;
+    var fromListSubjectIsTypingStatus=0;
+    var toDitchRequestFrom=0;
+    var isLockAddNewSubject=false;
+    var swIsLockGetMsg=false;
+    var toUpdateSubjects=false;
+    var doMaintenanceInterval=5000;
+    var getMsgInterval=4000;
+    //the three musketeers: three handles for three timeouts
+    var hndlGetMsg;
+    var hndlDoMaintenance;
+    var hndlAddNewSubject;
+    var focusId="";
+    var curSbjListIndxs=[];
+    var lngSlctCode="df";
+    var msgInNewTolkBox="";
+    var msgInFromListTolkBox="";
+    var sbjListChngdMsg="";
+    var sbjListChngdReallyMsg="";
+    var sbjListChngdPlentyMsg="";
+    var sbjListItmMySlctTtl="";
+    var sbjListItmMyDelTtl="";
+    var sbjListItmMyTwtTtl="";
+    var sbjAlreadyChosenMsg="";
+    var sbjStartTolkMsg="";
+    var sbjLostMsg="";
+    var msgSendAgainMsg="";
+    var sbjConLostMsg="";
+    var ditchPartnerRequestTtl="";
+    var ditchPartnerFinalTtl="";
+    var partnerTolksTtl="";
+    var youTolkTtl="";
+    var sbjIncestTabooMsg="";
+    var sbjMyLimitMsg="";
+    var sbjTotalLimitMsg="";
+    var delSbjNoGoMsg="";
+    var sbjAreaHdrTxt="";
+    var sbjInputPlaceHolder="";
+    var sbjInputTtl="";
+    var sbjAddBtnTxt="";
+    var tolkBtnTxt="";
+    var ditchBtnTxt="";
+    var sbjDitchMsg="";
+    var ditchBtnFreeTxt="";
+    var ditchBtnIgnoreTxt="";
+    var contBtnTxt="";
+    var aboutLinkTxt="";
+    var iDitchMsg="";
+    var youDitchMsg="";
+    var conversationShutDownMsg="";
+    var isTypingMsgArea="";
+    var siteTxtAr;
+    var fromTwitterMsgPart1="";
+    var fromTwitterMsgPart2="";
+    var s="<?=addslashes($s)?>";
+    var isFinishedFirstUpdate=false;
+
+    function getWndHeight() {
+      var myHeight = 0;
+      if( typeof( window.innerHeight ) == 'number' ) {
+        //Non-IE
+        myHeight = window.innerHeight;
+      } else if( document.documentElement && document.documentElement.clientHeight ) {
+        //IE 6+ in 'standards compliant mode'
+        myHeight = document.documentElement.clientHeight;
+      } else if( document.body && document.body.clientHeight ) {
+        //IE 4 compatible
+        myHeight = document.body.clientHeight;
+      }
+      return myHeight;
+    }
+    function getDocHeight() {
+        var D = document;
+        return Math.max(
+            Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
+            Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
+            Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+        );
+    }
+    function getDocWidth() {
+        var D = document;
+        return Math.max(
+            Math.max(D.body.scrollWidth, D.documentElement.scrollWidth),
+            Math.max(D.body.offsetWidth, D.documentElement.offsetWidth),
+            Math.max(D.body.clientWidth, D.documentElement.clientWidth)
+        );
+    }
+    $(document).ready(function(){
+       $(".msgToUser").css("display","none");
+       $("#curtain").removeClass("curtainDown").addClass("curtainUp");
+       $("#curtain").css("height",getDocHeight()+"px");
+       resetAllSiteTxt();
+    })
+    function toggleSbjFromTwitterMsg()
+    {
+       $("#comesFromADistance").slideToggle("slow",function(){
+           adjustScrn();
+       });
+    }
+    function onLoad()
+    {
+       setNextRefreshOp(true);
+       startNextRefreshOp();
+       hndlDoMaintenance=window.setTimeout ("doMaintenance()",doMaintenanceInterval);
+       $("#tolkaboutBody").css("visibility","visible");
+       $("#tolkaboutBody").css("height",getDocHeight()+"px");
+       
+       // here we set the max height of the subjects list box. we don't want to digress from the dimensions the 
+       // user (embedder) gave us    
+       var sbjCntrMaxHgt= getDocHeight()-
+                          ($("#manageSubjectsArea").attr("offsetTop")+
+                          $("#manageSubjectsArea").attr("offsetHeight")-
+                          $("#subjectsListContainer").attr("offsetHeight"));
+       $("#subjectsListContainer").css("max-height",sbjCntrMaxHgt+"px");
+    }
+    function setNextRefreshOp(isUpdateList)
+    {
+        toUpdateSubjects=isUpdateList;
+    }
+    function isNextRefreshOpUpdate()
+    {
+        return toUpdateSubjects;
+    }
+    function isLockGetMsg()
+    {
+        return swIsLockGetMsg;
+    }
+    function setIsLockGetMsg(isLock)
+    {
+        swIsLockGetMsg=isLock;
+    }
+    function startNextRefreshOp()
+    {
+        if (!isAddNewSubjectLocked())
+        {
+            setAddNewSubjectLock(true);
+            if (isNextRefreshOpUpdate())updateSubjectsList();
+            else getNewSubjectsCount();
+            doMaintenanceInterval=5000;
+        }
+        else doMaintenanceInterval=100;
+
+    }
+    function getNewSubjectsCount()
+    {
+        $.getJSON("getNewSubjectsCount.php",function(data){
+           var cnt=0;
+           setAddNewSubjectLock(false);
+           $.each(data,function(k,v){
+                var toAdd=true;
+               $.each(curSbjListIndxs,function (k1,v1){
+                    if (v==v1) toAdd=false;
+                    return toAdd;
+                });
+                if (toAdd)cnt++;
+           });
+           if (cnt>0)
+           {
+                var msgStr=sbjListChngdMsg;
+                if (cnt>100) msgStr=sbjListChngdPlentyMsg;
+                else if (cnt>10) msgStr=sbjListChngdReallyMsg;
+                $("#newSubjectsKnockingArea>span").text(msgStr);
+                $("#newSubjectsKnockingArea").slideDown();
+           }
+            else
+            {
+                clrNewSubjectsMsgArea();
+            }
+        });
+    }
+
+    function clrNewSubjectsMsgArea()
+    {
+        $("#newSubjectsKnockingArea>span").text("");
+        $("#newSubjectsKnockingArea").slideUp();
+    }
+    function updateSubjectsList()
+    {
+        $.getJSON("updateSubjectsList.php",function(data) {
+
+            var listToHTML="<ul>";
+            curSbjListIndxs=[];
+           $.each(data,function(k,v){
+                var subjectIndx=k;
+                var subjectNm=v.nm;
+                var isMine=v.isMine;
+                var textElementAttr="";
+                var itemClickBehavior="";
+                var itemClassName="subjectsListItem";
+                var imgClass="";
+                curSbjListIndxs[curSbjListIndxs.length]=k;
+
+                if (isMine=="1")
+                {
+                      textElementAttr=" title='"+sbjListItmMySlctTtl+"' ";
+                      itemClickBehavior=" onclick='explainTheConsequencesOfChoosingYourOwnSubjectMsg()' ";
+                      itemClassName="mySubjectItem";
+                      imgClass="tolkSubjectOptionItem hideMe";
+                }
+                else
+                {
+                     itemClickBehavior=" onclick='startTolking(this)' ";
+                     itemClassName="yourSubjectItem";
+                     imgClass="hideMe";
+                }
+
+                listToHTML+="<li class='"+itemClassName+"' "+itemClickBehavior+" onmouseover='toggleOptions(this,1);'"+
+                            "onmouseout='toggleOptions(this,0);'><span"+textElementAttr+
+                            " class='subjectListItmLn'>"+subjectNm+"</span><input type='hidden' value='"+
+                            subjectIndx+"'/><span class='subjectListItmLn rightAlign'><img class='"+imgClass+
+                            "' onmouseover='chngImg(this,1)' onmouseout='chngImg(this,2)' "+
+                            " src='./images/trash_unchosen.ico' title='"+sbjListItmMyDelTtl+
+                            "' onclick='delSubject(event);'/>"+
+                            "<img class='"+imgClass+"' onmouseover='chngImg(this,1)' onmouseout='chngImg(this,2)' "+
+                            "src='./images/twitter_unchosen.ico' title='"+sbjListItmMyTwtTtl+
+                            "' onclick='tweetSubject(event);'/>"+
+                            "</span></li>";
+
+           });
+           listToHTML+="</ul>";
+            $("#subjectsListContainer").html(listToHTML);
+           scrollToBottom(document.getElementById("subjectsListContainer"));
+           clrNewSubjectsMsgArea();
+           setNextRefreshOp(false);
+           setAddNewSubjectLock(false);
+           isFinishedFirstUpdate=true;
+        });
+    }
+    function startTolking(obj)
+    {
+        if (subjectFromListIndx!="")
+        {
+            openUsrMsg(sbjAlreadyChosenMsg);
+        }
+        else
+        {
+            subjectFromListIndx=obj.getElementsByTagName("input")[0].value;
+            $.ajax({
+              url: 'startTolking.php?fromTolkBox=2&subjectIndx='+subjectFromListIndx,
+              success: function(data) {
+                if (data=="1")
+                {
+                    window.open ("tolkBox.php?sbj="+obj.firstChild.innerHTML,"tolkbox",
+                                 "resizable=0,toolbar=0,height=500px,width=700px");
+                }
+                else
+                {
+                    subjectFromListIndx="";
+                    openUsrMsg(sbjLostMsg);
+                    setNextRefreshOp(true);
+                }
+              }
+            });
+        }
+    }
+    function doMaintenance()
+    {
+        var sbjToKeepAlive=serializeAr(newSubjectIndxAr)+"*"+subjectFromListIndx;
+        $.ajax({
+          url: "doMaintenance.php?sbjToKeepAlive="+sbjToKeepAlive+"&newSubjectIsTyping="+newSubjectIsTypingStatus+
+               "&fromListSubjectIsTyping="+fromListSubjectIsTypingStatus+"&newSubjectIndx="+newSubjectIndx+
+               "&subjectFromListIndx="+subjectFromListIndx,
+          error:function(data) {
+                window.clearTimeout(hndlDoMaintenance);
+                doMaintenanceInterval=100;
+                hndlDoMaintenance=window.setTimeout ("doMaintenance()",doMaintenanceInterval);
+          },
+          success: function(data) {
+                startNextRefreshOp();
+                window.clearTimeout(hndlDoMaintenance);
+                hndlDoMaintenance=window.setTimeout ("doMaintenance()",doMaintenanceInterval);
+                if (data.indexOf("typing in new registered")==1 && newSubjectIsTypingStatus==1)newSubjectIsTypingStatus=2;
+                if (data.indexOf("typing in from list registered")==1 &&
+                    fromListSubjectIsTypingStatus==1  )fromListSubjectIsTypingStatus=2;
+          }
+        });
+    }
+    function setAddNewSubjectLock(isLock)
+    {
+        isLockAddNewSubject=isLock;
+    }
+    function isAddNewSubjectLocked()
+    {
+        return isLockAddNewSubject;
+    }
+    function registerNewSubject(newSbjctIndx)
+    {
+        newSubjectNmAr[newSubjectNmAr.length]=$("#newSubjectInput").attr("value");
+        newSubjectIndxAr[newSubjectIndxAr.length]=newSbjctIndx;
+        $("#newSubjectInput").attr("value","");
+        setNextRefreshOp(true);
+        setAddNewSubjectLock(false);
+        startNextRefreshOp();
+    }
+    function explainTheConsequencesOfChoosingYourOwnSubjectMsg()
+    {
+        openUsrMsg(sbjIncestTabooMsg);
+    }
+    function addNewSubject(s,isFromTwitter)
+    {
+        var newSbj=s ? s : $("#newSubjectInput").attr("value");
+        if (isAddNewSubjectLocked() || newSbj=="")
+        {
+            if (isAddNewSubjectLocked())
+            {
+                window.clearTimeout(hndlAddNewSubject);
+                hndlAddNewSubject=window.setTimeout("addNewSubject()",1000);
+//              openUsrMsg("oopps! something happened. wait a second or two before trying to add your new subject again");
+            }
+        }
+        else
+        {
+            setAddNewSubjectLock(true);
+            var urlStr="addNewSubject.php?newSubjectInput="+newSbj+"&isFromTwitter="+(isFromTwitter ? 1 : 0);
+            $.ajax({url: urlStr,
+                    error: function(data) {
+                        setAddNewSubjectLock(false);},
+                    success: function(data) {
+                        dataAr=data.split("*&*");
+                        if (parseInt(dataAr[0],10)>4)
+                        {
+                            setAddNewSubjectLock(false);
+                            openUsrMsg(sbjMyLimitMsg);
+                            $("#newSubjectInput").attr("value","");
+                        }
+                        else if (parseInt(dataAr[1],10)>499)
+                        {
+                            setAddNewSubjectLock(false);
+                            openUsrMsg(sbjTotalLimitMsg);
+                            $("#newSubjectInput").attr("value","");
+                        }
+                        else registerNewSubject(dataAr[2]);
+                    }
+        });
+
+        }
+    }
+    function updateSubjectsFromKnockingArea()
+    {
+        setNextRefreshOp(true);
+        startNextRefreshOp();
+
+    }
+    function closeUsrMsg()
+    {
+       doTheeFocus();
+       $("#usrMsg").css("display","none");
+       $("#curtain").removeClass("curtainDown").addClass("curtainUp");
+    }
+    function doTheeFocus()
+    {
+        if (focusId!="")document.getElementById(focusId).focus();
+        clearTheeFocus();
+    }
+    function setTheeFocus(objId)
+    {
+        focusId=objId;
+    }
+    function clearTheeFocus()
+    {
+        focusId="";
+    }
+    function openUsrMsg(msgTxt)
+    {
+       $("#usrMsgTxt").html(msgTxt);
+       $("#usrMsg").css("display","");
+       $("#curtain").removeClass("curtainUp").addClass("curtainDown");
+       $("#usrMsgBtn").focus();
+    }
+    function isAddNewSubject(e)
+    {
+        if (e.keyCode==13 || e.which==13)
+        {
+            addNewSubject();
+            return false;
+        }
+        else return true;
+    }
+    function scrollToBottom(obj)
+    {
+        window.setTimeout("goScroll('"+obj.id+"')",100)
+    }
+    function goScroll(objId)
+    {
+        var obj=document.getElementById(objId);
+        obj.scrollTop=obj.scrollHeight+1000;
+    }
+    function chngImg(obj, opt) {
+
+        if (opt == 1) {
+            obj.src=obj.src.replace(/unchosen/,"chosen");
+            obj.style.cursor = "pointer";
+        }
+        else {
+            obj.src=obj.src.replace(/chosen/,"unchosen");
+            obj.style.cursor = "default";
+        }
+    }
+    function delSubject(e) {
+          var obj1=e.srcElement ? e.srcElement : e.target;
+          var sSubjectIndx= obj1.parentNode.parentNode.getElementsByTagName("input")[0].value;
+          if (e.stopPropagation)e.stopPropagation();
+          else e.cancelBubble=true;
+        $.ajax ({url:"delSubject.php?subjectIndx="+sSubjectIndx,success:function(data){
+             if (parseInt(data,10)==1)
+             {
+                 for (ii=0;ii<newSubjectIndxAr.length;ii++)
+                 {
+                     if (parseInt(newSubjectIndxAr[ii],10)==parseInt(sSubjectIndx))
+                     {
+                        newSubjectIndxAr.splice(ii,1);
+                        break;
+                     }
+                 }
+
+                 setNextRefreshOp(true);
+                 startNextRefreshOp();
+             }
+             else openUsrMsg (delSbjNoGoMsg);
+        }
+
+        })
+    }
+    function tweetSubject(e)
+    {
+          if (e.stopPropagation)e.stopPropagation();
+          else e.cancelBubble=true;
+          var obj1=e.srcElement ? e.srcElement : e.target;
+          var sSubject=obj1.parentNode.parentNode.firstChild.innerHTML;
+          localStorage.setItem("subjectToTweet",sSubject);
+          window.open ("twitter_login.php","Twitter_Sendin","width:500px;height:500px;")
+    }
+
+    function toggleOptions(obj,opt) {
+
+//       if (opt==0) $(".tolkSubjectOptionItem").removeClass("showMe").addClass("hideMe");
+//        else $(".tolkSubjectOptionItem").removeClass("hideMe").addClass("showMe");
+
+        var slctd=obj.querySelectorAll(".tolkSubjectOptionItem");
+        var classNmsStr="tolkSubjectOptionItem hideMe";
+        if (opt==1) classNmsStr="tolkSubjectOptionItem showMe";
+        for (var jj=0;jj<slctd.length;jj++)
+            slctd[jj].className = classNmsStr;
+    }
+    function serializeAr(tmpAr)
+    {
+        var rtStr="";
+        for (jj=0;jj<tmpAr.length;jj++)
+            if (tmpAr[jj]!="")
+            {
+                if (rtStr!="")rtStr+=",";
+                rtStr+=tmpAr[jj];
+            }
+        return rtStr;
+    }
+    function resetAllSiteTxt()
+    {
+        msgInNewTolkBox="start talking about your subject";
+        msgInFromListTolkBox="start talking about subject from list";
+        sbjListChngdMsg="things have changed";
+        sbjListChngdReallyMsg="things have really changed";
+        sbjListChngdPlentyMsg="wow!!! how things have changed";
+        sbjListItmMySlctTtl="this is your subject";
+        sbjListItmMyDelTtl="delete";
+        sbjListItmMyTwtTtl="tweet";
+        sbjAlreadyChosenMsg="one conversation a time, fella";
+        sbjStartTolkMsg="you can start talking about";
+        sbjLostMsg="sorry, but this one is lost";
+        msgSendAgainMsg="oy vey. just send the msg again.";
+        sbjConLostMsg="connection with partner is lost";
+        ditchPartnerRequestTtl="partner wants to leave";
+        ditchPartnerFinalTtl="partner left";
+        partnerTolksTtl="partner talks";
+        youTolkTtl="you talk";
+        sbjIncestTabooMsg="you can't choose your own subject";
+        sbjMyLimitMsg="you can't add more than 5 subjects";
+        sbjTotalLimitMsg="sorry. can't handle more subjects. try again shortly.";
+        delSbjNoGoMsg="you can't delete a subject while conversing";
+        sbjAreaHdrTxt="<?=$sbjAreaHdrTxt?>";
+        sbjInputPlaceHolder="<?=$sbjInputPlaceHolder?>";
+        sbjInputTtl="<?=$sbjInputTtl?>";
+        sbjAddBtnTxt="<?=$sbjAddBtnTxt?>";
+        tolkBtnTxt="<?=$tolkBtnTxt?>";
+        ditchBtnTxt="<?=$ditchBtnTxt?>";
+        sbjDitchMsg="<?=$sbjDitchMsg?>";
+        ditchBtnFreeTxt="<?=$ditchBtnFreeTxt?>";
+        ditchBtnIgnoreTxt="<?=$ditchBtnIgnoreTxt?>";
+        contBtnTxt="<?=$contBtnTxt?>";
+        aboutLinkTxt="<?=$aboutLinkTxt?>";
+        iDitchMsg="you left the conversation";
+        youDitchMsg="your partner left the conversation";
+        conversationShutDownMsg="the conversation got broken. sorry"
+        isTypingMsgArea="<?=$isTypingMsgArea?>";
+        fromTwitterMsgPart1="put";
+        fromTwitterMsgPart2="on the board. press here";
+    }
+    function moveOn()
+    {
+        $.ajax({url:"closeSession.php",
+        async:false
+        });
+    }
+</script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-11593898-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</html>

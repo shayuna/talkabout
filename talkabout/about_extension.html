@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>about</title>
+    <meta charset="ISO-8859-1" />
+    <link href="style.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="jquery.js"></script>
+</head>
+
+<body>
+    <div id="tolkaboutBody">
+        <div id="tolkaboutHdr"><span>Tolkabout</span></div>
+        <div id="aboutMain">
+            <p>
+                You don't have to put up with it. Just press the close button. It's big and ugly; but if you insist, then i'm shay and i'm a web tinkerer; meaning, i'm thinking web and doing web whenever and wherever i can. My day job is web-programming, but after working hours i like to fulfill my own phantasies, most of which are related to the web (but not all, some i'm keeping to myself. otherwise i'll surely put my marriage at stake). Generally speaking, i try to create things that i'll love to use but can't find on the web.            
+            </p>
+            <p>
+                This chat is such a thing: a chat based on subjects and not on physical traits, not on who you are in the real world but on what is interesting you. Another new thing here that i didn't find nowhere is the dialog form of the chat. Only two participants are allowed each session. This way we can really put the ego behind us and stick with the good old conversation that is sometimes, especially in our times, such a scarce commodity. Last new thing to introduce here is manners. You can't just get rid of your partner. You got to have his permission first (if one decides to exit the browser, well, i can't control that, but other than that, i'm doing whatever i can).            
+            </p>
+            <p>
+                So, here it is. enjoy. and if you have any feedback feel free to contact me  
+                <a href="mailto:shaiz2206@gmail.com">here</a>. you can also follow me (<a href="http://www.twitter.com/shayuna">here here here</a>) on twitter.           
+            </p>
+
+        </div>
+        <div id="backBtnContainer">
+            <input type="button" value="close" onclick="closeMe()"/>
+        </div>
+    </div>
+</body>
+<script language="javascript">
+    function getDocHeight() {
+        var D = document;
+        return Math.max(
+            Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
+            Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
+            Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+        );
+    }
+    $(document).ready(function(){
+       $("#tolkaboutBody").css("visibility","visible");
+        $("#tolkaboutBody").css("height",getDocHeight()-$("#tolkaboutBody").attr("offsetTop")-4);
+    })
+    function closeMe()
+    {
+        window.close();
+    }
+</script>
+</html>

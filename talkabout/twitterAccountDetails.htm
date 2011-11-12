@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>tolkabout Settings | dev.twitter.com</title>
+  <meta content="Twitter API developer resources." name="description" />
+  <link href="/images/dev/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <link href="http://a0.twimg.com/a/1281028705/stylesheets/dev/console.css?1281136841" media="screen" rel="stylesheet" type="text/css" />  <link href="http://a2.twimg.com/a/1281028705/stylesheets/dev/syntax_highlighting.css?1281136841" media="screen" rel="stylesheet" type="text/css" />  <link href="http://a3.twimg.com/a/1281028705/stylesheets/dev/dev.css?1281136841" media="screen" rel="stylesheet" type="text/css" />
+  <link href="http://a3.twimg.com/a/1281028705/stylesheets/dev/anywhere.css?1281136841" media="screen" rel="stylesheet" type="text/css" />
+  <link href="http://a3.twimg.com/a/1281028705/stylesheets/buttons.css?1281136841" media="screen" rel="stylesheet" type="text/css" />
+  <link href="http://a0.twimg.com/a/1281028705/stylesheets/dialog.css?1281136841" media="screen" rel="stylesheet" type="text/css" />
+  <script src="http://a2.twimg.com/a/1281028705/javascripts/dev/jquery.min.js?1281136841" type="text/javascript"></script>  <script src="http://a3.twimg.com/a/1281028705/javascripts/dev/jquery.form.js?1281136841" type="text/javascript"></script>  <script src="http://a0.twimg.com/a/1281028705/javascripts/dev/jquery.ui.js?1281136841" type="text/javascript"></script>  <script src="http://a1.twimg.com/a/1281028705/javascripts/dev/jquery.autocomplete.js?1281136841" type="text/javascript"></script>  <script src="http://a0.twimg.com/a/1281028705/javascripts/dev/json2.js?1281136841" type="text/javascript"></script>  <script src="http://a1.twimg.com/a/1281028705/javascripts/dev/hurl.js?1281136841" type="text/javascript"></script>  <script src="http://a1.twimg.com/a/1281028705/javascripts/dev/hurl.headers.js?1281136841" type="text/javascript"></script>  <script src="http://a1.twimg.com/a/1281028705/javascripts/base.js?1281136841" type="text/javascript"></script>  <script src="http://a3.twimg.com/a/1281028705/javascripts/dialog.js?1281136841" type="text/javascript"></script>  <script src="http://a2.twimg.com/a/1281028705/javascripts/dev/dev.js?1281136841" type="text/javascript"></script>  <script src="http://a0.twimg.com/a/1281028705/javascripts/dev/toc.js?1281136841" type="text/javascript"></script>  
+</head>
+<body>
+  <div id="container">
+    <div id="header">
+      <div id="logo"><a href="http://dev.twitter.com/">dev@twitter</a></div>
+      <div id="nav">
+        <ul>
+          <li class="first">
+                          <a href="/status">API Status</a>
+                      </li>
+          <li><a href="/doc">Documentation</a></li>
+          <li><a href="http://dev.twitter.com/discuss">Discussions</a></li>
+                      <li><a href="http://dev.twitter.com/apps">Your apps</a></li>
+            <li class="last"><a href="http://dev.twitter.com/logout" onclick="var f = document.createElement('form'); f.style.display = 'none'; this.parentNode.appendChild(f); f.method = 'POST'; f.action = this.href;var s = document.createElement('input'); s.setAttribute('type', 'hidden'); s.setAttribute('name', 'authenticity_token'); s.setAttribute('value', '36ad8d01a0da1690cbffe34da56e0892f53ca470'); f.appendChild(s);f.submit();return false;">Sign out</a></li>
+                  </ul>
+        <form id="search" action="/search" method="get">
+           <input type="text" name="query" value="" class="q" />
+           <input type="submit" id="q" value="Search" class="btn"/>
+         </form>
+      </div>
+    </div>
+          <div id="announcements">
+        <div class="more">
+  <h2>Basic Auth Deprecation on August 16, 2010</h2>
+</div>
+
+<p>
+  <img src="http://a0.twimg.com/images/dev/bookmark.png" class="bookmark" alt="Attention!" />
+  <span class="important"><a href="http://countdowntooauth.com/" target="_blank">August 16, 2010</a></span>
+  The @twitterapi team will be shutting off basic authentication on the Twitter API. All applications, by this date, need to switch to <a href="/pages/auth_overview">using OAuth</a>. <span class="see_more_announcements"><a href="/announcements">Read more &raquo;</a></span></p>
+
+<div class="more">
+  <p>Don't fret! <a href="http://twitter.com/twitterapi">@twitterapi</a> is here to help! Feel free to reach out to us directly, or via our <a href="http://groups.google.com/group/twitter-development-talk">Twitter Development Talk</a> group.</p>
+  <p>The switch to OAuth is a good thing! You, as the application developer,</p>
+  <ul>
+    <li>don't have the burden of keeping potentially damaging credentials for your users (especially considering that a lot of people use the same password for multiple services);</li>
+    <li>don't have to worry about the user changing their password — a user can change his or her password and the OAuth "connection" to your app will still work;</li>
+    <li>don't have to worry about other applications masquerading as your application as only your application can set the byline with your application name;</li>
+    <li>will eventually have access to more trusted APIs from Twitter that will only be available to "trusted" OAuth-enabled applications; and</li>
+    <li>will be contributing to the web of trust between users, service providers, and applications.</li>
+  </ul>
+  <p><a href="/pages/auth_overview">Choose your authorization path.</a></p>
+</div>
+      </div>
+        <div id="content">
+            
+      <script type="text/javascript">
+jQuery(document).ready(function(){
+  $('#regenerate_keys_form').submit(function() { return confirm("Are you sure you want to reset your consumer key and consumer secret?"); });
+});
+</script>
+<div class="row clearfix">
+  <div class="t-100">
+    <div class="box title heading">
+      <img src="/images/dev/clouds.png" class="clouds"/>
+      <h1>tolkabout Settings</h1>
+      <p class="breadcrumb">By </p>
+    </div>
+  </div>
+  <div class="box t-100 subheading">
+    <p>Application details</p>
+  </div>
+</div>
+<div class="row clearfix t-100 box total apps">
+  <div class="t-75 content">
+    <div class="app-details" style="padding-top:10px">
+      <p>
+        <a href="http://www.tolkabout.com"><img alt="Oauth_application" src="http://s.twimg.com/a/1281028705/images/oauth_application.png" /></a> this application is a kind of chat based on subjects rather than on people<br/>Created by <a href="http://dev.twitter.com/tolkabout" title="tolkabout">tolkabout</a>      </p>
+      <h2 class="sep">@Anywhere Settings</h2>
+      <p>@Anywhere is easy to deploy. You only need an API key and registered callback URL.</p>
+        <h2>API key</h2>
+        <p>qYFP661wFcGulakfbOgFA</p>
+        <h2>Registered Callback URL</h2>
+        <p>http://www.tolkabout.com/backFromTwitter.php<br/>
+          
+            <small style="color:#777">The @Anywhere callback URL's domain &amp; subdomain must match the location of @Anywhere integrations on your site.</small>
+            <br/><small style="color:#777">You can <a href="/apps/237690/domains">authorize additional domains</a> if you need to integrate with more than one site.</small>
+          
+        </p>
+
+      <h2 class="sep">OAuth 1.0a Settings</h2>
+      <p>OAuth 1.0a integrations require more work.</p>
+        <h2>Consumer key</h2>
+        <p>qYFP661wFcGulakfbOgFA</p>
+        <h2>Consumer secret</h2>
+        <p>fsuNHIYuFReJkHm1QMKIBWauxpDuNPRbnm9yRVqBI</p>
+        <h2>Request token URL</h2>
+        <p><code>https://api.twitter.com/oauth/request_token</code></p>
+        <h2>Access token URL</h2>
+        <p><code>https://api.twitter.com/oauth/access_token</code></p>
+        <h2>Authorize URL</h2>
+        <p><code>https://api.twitter.com/oauth/authorize</code><br/><small style="color:#777">We support hmac-sha1 signatures. We do not support the plaintext signature method.</small></p>
+                  <h2>Registered OAuth Callback URL</h2>
+          <p>http://www.tolkabout.com/backFromTwitter.php</p>
+              <h2 class="sep">General</h2>
+        <h2>Access Level</h2>
+        <p>read and write</p>
+      <p><strong>Note</strong>: xAuth is not enabled for applications by default. See the <a href="/pages/xauth">xAuth Documentation</a> for more information.</p>
+    </div>
+  </div>
+  <div class="t-25 last">
+  <div id="sidebar" class="side last t-100">
+          <div>
+        <a id="edit_application" class="sidelink" href="http://dev.twitter.com/apps/edit/237690">Edit Application Settings</a>
+        <a id="manage_domains" class="sidelink" href="http://dev.twitter.com/apps/237690/domains">Manage Domains</a>
+<form action="/apps/regenerate_keys/237690" id="regenerate_keys_form" method="post"><div style="margin:0;padding:0"><input name="authenticity_token" type="hidden" value="36ad8d01a0da1690cbffe34da56e0892f53ca470" /></div>          <input type="submit" id="regenerate_keys" value="Reset Consumer Key/Secret" class="sidelink"/>
+</form><form action="/apps/237690/my_token" id="my_access_token_form" method="post"><div style="margin:0;padding:0"><input name="authenticity_token" type="hidden" value="36ad8d01a0da1690cbffe34da56e0892f53ca470" /></div>          <input type="submit" id="my_access_token" value="My Access Token" class="sidelink"/>
+</form>
+      </div>
+        <a href="/apps" class="sidelink">View your applications</a>
+  </div>
+</div>
+
+</div>
+    </div>
+    <div id="footer">
+      <ul>
+        <li class="first">&copy; 2010 Twitter</li>
+        <li><a href="http://twitter.com/about#about">About Us</a></li>
+        <li><a href="http://twitter.com/about#contact">Contact</a></li>
+        <li><a href="http://blog.twitter.com">Blog</a></li>
+        <li><a href="http://status.twitter.com">Status</a></li>
+        <li><a href="/status">API Status</a></li>
+        <li><a href="http://twitter.com//goodies">Goodies</a></li>
+        <li><a href="http://business.twitter.com/twitter101">Business</a></li>
+        <li><a href="http://support.twitter.com">Help</a></li>
+        <li><a href="http://twitter.com/jobs">Jobs</a></li>
+        <li><a href="http://twitter.com/tos">Terms</a></li>
+        <li><a href="http://twitter.com/privacy">Privacy</a></li>
+        <li><a href="http://twitter.com/twitterapi">@TwitterAPI</a></li>
+      </ul>
+    </div>
+  </div>
+  <script type="text/javascript">
+    
+  </script>
+  <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-30775-16");
+  pageTracker._trackPageview();
+  } catch(err) {}</script>
+</body>
+</html>
